@@ -13,7 +13,8 @@ export class TachesComponent implements OnInit {
   taches: Array<Tache> = [];
   newTache: Tache = {
     titre : '',
-    termine : false
+    termine : false,
+    statut : ''
   };  
   
   filter:string = 'Tous';
@@ -29,13 +30,23 @@ export class TachesComponent implements OnInit {
 
   }  
 
-  ajouter() {
+  ajouter(type:string) {
+    this.newTache.statut = type;
     this.tacheService.ajoutTaches(this.newTache).subscribe({
       next: (data) => {
         this.taches.push(data);
+        //actualiser la liste
+        this.tacheService.getTaches().subscribe({
+          next: (data:Array<Tache>) => { this.taches = data; }
+        });
       }
     });
-    
+    this.newTache = {
+      titre : '',
+      termine : false,
+      statut : ''
+    };
+
   }  
 
   supprimer(tache: Tache): void {
