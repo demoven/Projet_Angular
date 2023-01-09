@@ -16,13 +16,13 @@ export class TachesComponent implements OnInit {
     termine : false,
     statut : ''
   };  
-  
+
   filter:string = 'Tous';
 
   constructor(private tacheService: TachesService,
     private userService: UserService,
     private router: Router){ }
-  
+
   ngOnInit(): void {
     this.tacheService.getTaches().subscribe({
       next: (data:Array<Tache>) => { this.taches = data; }
