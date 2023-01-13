@@ -5,6 +5,7 @@ import { TachesService } from 'src/app/service/taches.service';
 import { UserService } from 'src/app/service/user.service';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import { trigger } from '@angular/animations';
+import { liste } from 'src/app/model/liste';
 
 @Component({
   selector: 'app-taches',
@@ -17,6 +18,7 @@ export class TachesComponent implements OnInit {
   EnCours: Array<Tache> = [];
   Termine: Array<Tache> = [];
   Undefini:Array<Tache> = [];
+  listeN:Array<liste> = [];
   newTache: Tache = {
     titre : '',
     termine : false,
@@ -47,6 +49,7 @@ export class TachesComponent implements OnInit {
             this.Undefini.push(tache);
           }
         });
+        
       }
     });
 
