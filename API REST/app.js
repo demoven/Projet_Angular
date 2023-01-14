@@ -1,15 +1,12 @@
 const express = require('express');
 const session = require('express-session');
 
-const MongoClient = require('mongodb').MongoClient;
-const mongodb = require('mongodb');
 const bodyParser = require('body-parser');
 const { tacheGet, tachePost, tacheDelete, tachePut} = require('./tacheController');
 const { signIn, login, logout, isConnected } = require("./authController")
 const { listeGet, ListeTacheGet } = require("./listeController")
 const cors = require('cors')
 
-const url = "mongodb://127.0.0.1:27017/";
 const app = express();
 const port = 3000;
 

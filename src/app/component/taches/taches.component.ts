@@ -4,7 +4,6 @@ import { Tache } from 'src/app/model/tache';
 import { TachesService } from 'src/app/service/taches.service';
 import { UserService } from 'src/app/service/user.service';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
-import { trigger } from '@angular/animations';
 import { liste } from 'src/app/model/liste';
 
 @Component({
