@@ -14,10 +14,6 @@ import { liste } from 'src/app/model/liste';
 })
 export class TachesComponent implements OnInit {
   taches: Array<Tache> = [];
-  EnAttente: Array<Tache> = [];
-  EnCours: Array<Tache> = [];
-  Termine: Array<Tache> = [];
-  Undefini:Array<Tache> = [];
   listeN:Array<liste> = [];
   newTache: Tache = {
     titre : '',
@@ -35,24 +31,16 @@ export class TachesComponent implements OnInit {
     this.tacheService.getTaches().subscribe({
       next: (data:Array<Tache>) => {
         this.taches = data;
-        this.taches.forEach(tache => {
-          if(tache.statut == 'En attente') {
-            this.EnAttente.push(tache);
-          }
-          else if(tache.statut == 'En cours') {
-            this.EnCours.push(tache);
-          }
-          else if(tache.statut == 'Termine') {
-            this.Termine.push(tache);
-          }
-          else {
-            this.Undefini.push(tache);
-          }
-        });
+        console.log(this.taches)
+      }
+    });
+    this.tacheService.getListes().subscribe({
+      next: (data2:Array<liste>) => {
+        this.listeN = data2;
+        console.log(this.listeN);
         
       }
     });
-
   }  
 
   ajouter(type:string) {
@@ -60,18 +48,6 @@ export class TachesComponent implements OnInit {
     this.tacheService.ajoutTaches(this.newTache).subscribe({
       next: (data) => {
         this.taches.push(data);
-        if(type == 'En attente') {
-          this.EnAttente.push(data);
-        }
-        else if(type == 'En cours') {
-          this.EnCours.push(data);
-        }
-        else if(type == 'Termine') {
-          this.Termine.push(data);
-        }
-        else {
-          this.Undefini.push(data);
-        }
         //actualiser la liste
         this.tacheService.getTaches().subscribe({
           next: (data:Array<Tache>) => { this.taches = data; }
@@ -83,17 +59,12 @@ export class TachesComponent implements OnInit {
       termine : false,
       statut : ''
     };
-
   }  
 
   supprimer(tache: Tache): void {
     this.tacheService.removeTaches(tache).subscribe({
       next: (data) => {
         this.taches = this.taches.filter(t => tache._id != t._id);
-        this.EnAttente = this.EnAttente.filter(t => tache._id != t._id);
-        this.EnCours = this.EnCours.filter(t => tache._id != t._id);
-        this.Termine = this.Termine.filter(t => tache._id != t._id);
-        this.Undefini = this.Undefini.filter(t => tache._id != t._id);
       }
     });
     

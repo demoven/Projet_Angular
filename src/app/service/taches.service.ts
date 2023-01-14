@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { liste } from '../model/liste';
 import { Tache } from '../model/tache';
 
 @Injectable({
@@ -8,11 +9,16 @@ import { Tache } from '../model/tache';
 })
 export class TachesService {
   private url:string = 'http://localhost:3000/taches/';
+  private urlListe:string = 'http://localhost:3000/listes/';
 
   constructor(private http: HttpClient) { }
 
   getTaches():Observable<Array<Tache>> {
     return this.http.get<Array<Tache>>(this.url, {withCredentials:true});
+  }
+
+  getListes():Observable<Array<liste>> {
+    return this.http.get<Array<liste>>(this.urlListe, {withCredentials:true});
   }
 
   ajoutTaches(tache:Tache):Observable<Tache> {

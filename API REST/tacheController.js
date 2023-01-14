@@ -51,15 +51,6 @@ exports.tachePut = async function(req, res, next) {
     }
 };
 
-exports.listeGet = async function(req, res) {
-    try {
-        db = await MongoClient.connect(url);
-        let dbo = db.db("taches");
-        let datas = await dbo.collection("listes").find({}).toArray();
-        res.status(200).json(datas);
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ message: err })
-    }
-};
+
+
 

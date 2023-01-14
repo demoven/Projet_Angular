@@ -4,8 +4,9 @@ const session = require('express-session');
 const MongoClient = require('mongodb').MongoClient;
 const mongodb = require('mongodb');
 const bodyParser = require('body-parser');
-const { tacheGet, tachePost, tacheDelete, tachePut, listeGet, tacheGetByListe } = require('./tacheController');
+const { tacheGet, tachePost, tacheDelete, tachePut} = require('./tacheController');
 const { signIn, login, logout, isConnected } = require("./authController")
+const { listeGet, ListeTacheGet } = require("./listeController")
 const cors = require('cors')
 
 const url = "mongodb://127.0.0.1:27017/";
@@ -38,7 +39,10 @@ app.post('/login', login);
 app.post('/logout', logout);
 app.get('/isConnected', checkSignIn, isConnected);
 
-app.get('/taches', checkSignIn,  listeGet);
+app.get('/listes', checkSignIn, listeGet);
+app.get('/listes/:id', checkSignIn, ListeTacheGet);
+
+app.get('/taches', checkSignIn, tacheGet);
 app.post('/taches', checkSignIn, tachePost);
 app.delete('/taches/:id', checkSignIn, tacheDelete);
 app.put('/taches/:id', checkSignIn, tachePut);
