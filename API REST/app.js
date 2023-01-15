@@ -4,7 +4,7 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const { tacheGet, tachePost, tacheDelete, tachePut} = require('./tacheController');
 const { signIn, login, logout, isConnected } = require("./authController")
-const { listeGet, ListeTacheGet } = require("./listeController")
+const { listeGet, listePost, listeDelete, listePut } = require("./listeController")
 const cors = require('cors')
 
 const app = express();
@@ -37,7 +37,9 @@ app.post('/logout', logout);
 app.get('/isConnected', checkSignIn, isConnected);
 
 app.get('/listes', checkSignIn, listeGet);
-app.get('/listes/:id', checkSignIn, ListeTacheGet);
+app.post('/listes', checkSignIn, listePost);
+app.delete('/listes/:id', checkSignIn, listeDelete);
+app.put('/listes/:id', checkSignIn, listePut);
 
 app.get('/taches', checkSignIn, tacheGet);
 app.post('/taches', checkSignIn, tachePost);

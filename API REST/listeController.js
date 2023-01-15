@@ -3,52 +3,56 @@ const MongoClient = mongodb.MongoClient;
 const ObjectId = mongodb.ObjectId;
 const url = "mongodb://127.0.0.1:27017/";
 
-
-
-
-
-
 exports.listeGet = async function (req, res) {
     try {
         db = await MongoClient.connect(url);
         let dbo = db.db("taches");
-        let datas = await dbo.collection("listes").find({}).toArray();
-        res.status(200).json(datas);
+        let listeObject = await dbo.collection("listes").find({}).toArray();
+        for (let i = 0; i < listeObject.length; i++) {
+            const liste = listeObject[i];
+            const taches = liste.taches.map(t => new ObjectId(t));
+            liste.tachesliste = await dbo.collection("taches").find({ _id: { $in: taches } }).toArray();
+        }
+        res.status(200).json(listeObject);
     } catch (err) {
         console.log(err);
-        res.status(500).json({ message: err })
-    }
+        res.status(500).json({ message: err });
+    } 
 };
 
-exports.ListeTacheGet = async function (req, res) {
+exports.listePost = async function (req, res) {
+    let liste = req.body;
     try {
-        const listeId = new ObjectId(req.params.id);
         db = await MongoClient.connect(url);
         let dbo = db.db("taches");
-        const listeObject = await dbo.collection("listes").findOne({ _id: listeId });
-        if(listeObject){
-            const taches = listeObject.taches.map(t => new ObjectId(t));
-            const tachesObject = await dbo.collection("listes").aggregate([
-                { $match: { _id: listeId } },
-                {
-                    $lookup: {
-                        from: "taches",
-                        let : { taches: taches },
-                        pipeline: [
-                            { $match: { $expr: { $in: ["$_id", "$$taches"] } } }
-                        ],
-                        as: "tachesliste"
-                    }
-                }
-            ]).toArray();
-        res.status(200).json(tachesObject);
-        } 
-
+        await dbo.collection("listes").insertOne(liste);
+        res.status(200).json(liste);
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: err })
     }
 };
 
+exports.listeDelete = async function (req, res) {
+    try {
+        db = await MongoClient.connect(url);
+        let dbo = db.db("taches");
+        await dbo.collection("listes").deleteOne({ _id: new mongodb.ObjectId(req.params.id) });
+        res.status(200).send();
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: err })
+    }
+};
 
-
+exports.listePut = async function (req, res) {
+    try {
+        db = await MongoClient.connect(url);
+        let dbo = db.db("taches");
+        await dbo.collection("listes").updateOne({ _id: new mongodb.ObjectId(req.params.id) }, { $set: { titre: req.body.titre, taches: req.body.taches } });
+        res.status(200).send();
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: err })
+    }
+};

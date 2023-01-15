@@ -3,8 +3,8 @@ import { Router } from '@angular/router';
 import { Tache } from 'src/app/model/tache';
 import { TachesService } from 'src/app/service/taches.service';
 import { UserService } from 'src/app/service/user.service';
-import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
-import { liste } from 'src/app/model/liste';
+import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { liste, listeMongo } from 'src/app/model/liste';
 
 @Component({
   selector: 'app-taches',
@@ -12,62 +12,123 @@ import { liste } from 'src/app/model/liste';
   styleUrls: ['./taches.component.css']
 })
 export class TachesComponent implements OnInit {
-  taches: Array<Tache> = [];
-  listeN:Array<liste> = [];
+  listeN: Array<liste> = [];
   newTache: Tache = {
-    titre : '',
-    termine : false,
-    statut : ''
-  };  
+    titre: '',
+    termine: false,
+    statut: ''
+  };
+  newListe: listeMongo = {
+    titre: '',
+    taches: [],
+  };
+  newListe2: liste = {
+    titre: '',
+    taches: [],
+    tachesliste: []
+  };
 
-  filter:string = 'Tous';
+
+
+  filter: string = 'Tous';
 
   constructor(private tacheService: TachesService,
     private userService: UserService,
-    private router: Router){ }
+    private router: Router) { }
 
   ngOnInit(): void {
-    this.tacheService.getTaches().subscribe({
-      next: (data:Array<Tache>) => {
-        this.taches = data;
-        console.log(this.taches)
-      }
-    });
     this.tacheService.getListes().subscribe({
-      next: (data2:Array<liste>) => {
+      next: (data2: Array<liste>) => {
         this.listeN = data2;
-        console.log(this.listeN);
-        
       }
     });
-  }  
+  }
 
-  ajouter(type:string) {
-    this.newTache.statut = type;
-    this.tacheService.ajoutTaches(this.newTache).subscribe({
+  ajouter(liste: liste) {
+    this.newTache.statut = liste.titre;
+    this.tacheService.ajoutTaches(this.newTache).subscribe(
+      (data) => {
+        liste.tachesliste.push(data);
+        if (data._id) {
+          liste.taches.push(data._id);
+        }
+        this.tacheService.updateListes(liste).subscribe({
+          next: (data2: liste) => {
+            //actualiser la liste
+            this.tacheService.getListes().subscribe({
+              next: (data3: Array<liste>) => { this.listeN = data3; }
+            });
+          }
+        });
+      }
+    );
+    this.newTache = {
+      titre: '',
+      termine: false,
+      statut: ''
+    };
+  }
+
+
+  ajouterListe() {
+    this.newListe.titre = this.newListe2.titre;
+    this.newListe.taches = this.newListe2.taches;
+    this.tacheService.ajoutListes(this.newListe).subscribe({
       next: (data) => {
-        this.taches.push(data);
+        this.listeN.push(data);
         //actualiser la liste
-        this.tacheService.getTaches().subscribe({
-          next: (data:Array<Tache>) => { this.taches = data; }
+        this.tacheService.getListes().subscribe({
+          next: (data2: Array<liste>) => { this.listeN = data2; }
         });
       }
     });
-    this.newTache = {
-      titre : '',
-      termine : false,
-      statut : ''
+    this.newListe = {
+      titre: '',
+      taches: [],
     };
-  }  
+    this.newListe2 = {
+      titre: '',
+      taches: [],
+      tachesliste: []
+    };
+
+  }
+
 
   supprimer(tache: Tache): void {
     this.tacheService.removeTaches(tache).subscribe({
       next: (data) => {
-        this.taches = this.taches.filter(t => tache._id != t._id);
+        this.listeN.forEach(liste => {
+          liste.tachesliste = liste.tachesliste.filter(t => t._id != tache._id);
+          liste.taches = liste.taches.filter(t => t != tache._id);
+
+          this.tacheService.updateListes(liste).subscribe({
+            next: (data2: liste) => {
+              //actualiser la liste
+              this.tacheService.getListes().subscribe({
+                next: (data3: Array<liste>) => { this.listeN = data3; }
+              });
+            }
+          });
+        }
+        );
       }
     });
-    
+  }
 
+  supprimerListe(liste: liste): void {
+    for (let tache of liste.tachesliste) {
+      this.tacheService.removeTaches(tache).subscribe({
+        next: (data) => {
+        }
+      });
+    }
+
+    this.tacheService.removeListes(liste).subscribe({
+      next: (data) => {
+        this.listeN = this.listeN.filter(l => liste._id != l._id);
+      }
+    });
   }
 
   modifier(tache: Tache) {
@@ -84,7 +145,7 @@ export class TachesComponent implements OnInit {
     })
   }
 
-  change(filter:string) {
+  change(filter: string) {
     this.filter = filter;
   }
 

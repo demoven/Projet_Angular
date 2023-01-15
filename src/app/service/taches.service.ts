@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { liste } from '../model/liste';
+import { liste, listeMongo } from '../model/liste';
 import { Tache } from '../model/tache';
 
 @Injectable({
@@ -17,10 +17,6 @@ export class TachesService {
     return this.http.get<Array<Tache>>(this.url, {withCredentials:true});
   }
 
-  getListes():Observable<Array<liste>> {
-    return this.http.get<Array<liste>>(this.urlListe, {withCredentials:true});
-  }
-
   ajoutTaches(tache:Tache):Observable<Tache> {
     return this.http.post<Tache>(this.url,tache, {withCredentials:true});
   }
@@ -31,6 +27,22 @@ export class TachesService {
 
   removeTaches(tache:Tache):Observable<Tache> {
     return this.http.delete<Tache>(this.url+tache._id, {withCredentials:true});
+  }
+
+  getListes():Observable<Array<liste>> {
+    return this.http.get<Array<liste>>(this.urlListe, {withCredentials:true});
+  }
+
+  ajoutListes(liste:listeMongo):Observable<liste> {
+    return this.http.post<liste>(this.urlListe,liste, {withCredentials:true});
+  }
+
+  updateListes(liste:listeMongo):Observable<liste> {
+    return this.http.put<liste>(this.urlListe+liste._id, liste, {withCredentials:true});
+  }
+
+  removeListes(liste:listeMongo):Observable<liste> {
+    return this.http.delete<liste>(this.urlListe+liste._id, {withCredentials:true});
   }
   
 }
