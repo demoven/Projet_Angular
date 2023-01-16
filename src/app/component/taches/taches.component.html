@@ -1,33 +1,34 @@
 <div class="container-fluid d-flex justify-content-center">
     <div class="d-flex flex-column">
-        <div class="bd-highlight d-flex justify-content-center">
-            <h1>Taches</h1>
-            <button class="btn btn-outline-secondary m-1" (click)="loggout()">Logout</button>
-        </div>
-
-        <div class="d-flex flex-row justify-content-center ">
-            <input class="inputAjoutListe" class="saisieInput" type="text" name="tache" placeholder="Liste N" [(ngModel)]="newListe2.titre">
-            <button class="buttonAjoutListe" class="btn btn-primary" value="Ajouter"(click)='ajouterListe()'>Ajouter</button>
-        </div>
-
-        <div class="row principale" *ngFor="let liste of listeN">
-          
-            <div class="col-md-3">
-                  <div class="d-flex justify-content-between m-1">
-                <h2>{{liste.titre}}</h2>
-                <button class="btn btn-outline-danger m-1" (click)='supprimerListe(liste)'>Supprimer</button>
+        <div>
+            <div class="bd-highlight d-flex justify-content-center">
+                <h1>Taches</h1>
+                <button class="btn btn-outline-secondary m-1" (click)="loggout()">Logout</button>
             </div>
-           
-                
-                <div class="d-flex flex-row justify-content-center ">
-                    <input class="inputAjoutTache" class="saisieInput" type="text" name="tache" placeholder="tache" [(ngModel)]="newTache.titre">
-                    <button class="buttonAjoutTache" class="btn btn-primary" value="Ajouter"(click)='ajouter(liste)'>Ajouter</button>
-                </div>
-                <div class="d-flex  justify-content-center">
-                    <div [ngClass]="{'listeVide': liste.tachesliste.length === 0 }" cdkDropList [cdkDropListData]="liste.tachesliste" class="d-flex flex-column listeTaches" (cdkDropListDropped)="drop($event)">
-                        <div class="d-flex justify-content-between m-1" *ngFor="let tache of liste.tachesliste" cdkDrag>
-                            <div>{{tache.titre}}</div>
-                            <button class="btn btn-outline-danger m-1" (click)='supprimer(tache)'>Supprimer</button>
+
+            <div class="d-flex flex-row justify-content-center ">
+                <input class="inputAjoutListe" class="saisieInput" type="text" name="tache" placeholder="Liste N" [(ngModel)]="newListe2.titre">
+                <button class="buttonAjoutListe" class="btn btn-primary" value="Ajouter" (click)='ajouterListe()'>Ajouter</button>
+            </div>
+        </div>
+        <div cdkDropListGroup>
+            <div class="row principale" *ngFor="let liste of listeN">
+
+                <div class="col-md-3">
+                    <div class="d-flex justify-content-between m-1">
+                        <h2>{{liste.titre}}</h2>
+                        <button class="btn btn-outline-danger m-1" (click)='supprimerListe(liste)'>Supprimer</button>
+                    </div>
+                    <div class="d-flex flex-row justify-content-center ">
+                        <input class="inputAjoutTache" class="saisieInput" type="text" name="tache" placeholder="tache" [(ngModel)]="newTache.titre">
+                        <button class="buttonAjoutTache" class="btn btn-primary" value="Ajouter" (click)='ajouter(liste)'>Ajouter</button>
+                    </div>
+                    <div class="d-flex  justify-content-center">
+                        <div [ngClass]="{'listeVide': liste.taches.length === 0 }" cdkDropList [cdkDropListData]="liste.tachesliste" [id]="liste._id ? liste._id : ''" class="d-flex flex-column " (cdkDropListDropped)="drop($event)">
+                            <div class="d-flex justify-content-between m-1" *ngFor="let tache of liste.tachesliste" cdkDrag>
+                                <div>{{tache.titre}}</div>
+                                <button class="btn btn-outline-danger m-1" (click)='supprimer(tache)'>Supprimer</button>
+                            </div>
                         </div>
                     </div>
                 </div>

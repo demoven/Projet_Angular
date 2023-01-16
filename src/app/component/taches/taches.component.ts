@@ -91,7 +91,6 @@ export class TachesComponent implements OnInit {
       taches: [],
       tachesliste: []
     };
-
   }
 
 
@@ -159,15 +158,40 @@ export class TachesComponent implements OnInit {
         event.previousIndex,
         event.currentIndex,
       );
-
       let tache = event.container.data[event.currentIndex];
-      tache.statut = event.container.id;
-      this.tacheService.updateTaches(tache).subscribe({
-        next: (data) => {
+      this.listeN.forEach(liste => {
+
+        if (liste._id == event.container.id) {
+          tache.statut = liste.titre;
+          this.tacheService.updateTaches(tache).subscribe({
+            next: (data) => {
+            }
+          });
+          if (tache._id) {
+            liste.taches.push(tache._id);
+          }
+          this.tacheService.updateListes(liste).subscribe({
+            next: (data2: liste) => {
+              //actualiser la liste
+              this.tacheService.getListes().subscribe({
+                next: (data3: Array<liste>) => { this.listeN = data3; }
+              });
+            }
+          });
+        }
+        if (liste._id == event.previousContainer.id) {
+          liste.tachesliste = liste.tachesliste.filter(t => t._id != tache._id);
+          liste.taches = liste.taches.filter(t => t != tache._id);
+          this.tacheService.updateListes(liste).subscribe({
+            next: (data2: liste) => {
+              //actualiser la liste
+              this.tacheService.getListes().subscribe({
+                next: (data3: Array<liste>) => { this.listeN = data3; }
+              });
+            }
+          });
         }
       });
-
     }
   }
-
 }
