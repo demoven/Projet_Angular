@@ -10,8 +10,11 @@ exports.listeGet = async function (req, res) {
         let listeObject = await dbo.collection("listes").find({}).toArray();
         for (let i = 0; i < listeObject.length; i++) {
             const liste = listeObject[i];
+            if(liste.taches){
             const taches = liste.taches.map(t => new ObjectId(t));
             liste.tachesliste = await dbo.collection("taches").find({ _id: { $in: taches } }).toArray();
+            }
+            
         }
         res.status(200).json(listeObject);
     } catch (err) {
