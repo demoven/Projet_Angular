@@ -7,7 +7,10 @@ exports.listeGet = async function (req, res) {
     try {
         db = await MongoClient.connect(url);
         let dbo = db.db("taches");
-        let listeObject = await dbo.collection("listes").find({}).toArray();
+        console.log(req.params.id)
+        let user = await dbo.collection("utilisateur").findOne({ _id: new ObjectId(req.params.id) });
+        const listeIds = user.listeIds.map(l => new ObjectId(l));
+        let listeObject = await dbo.collection("listes").find({ _id: { $in: listeIds } }).toArray();
         for (let i = 0; i < listeObject.length; i++) {
             const liste = listeObject[i];
             if(liste.taches){
@@ -59,3 +62,29 @@ exports.listePut = async function (req, res) {
         res.status(500).json({ message: err })
     }
 };
+
+exports.UserInfo = async function(req, res) {
+    try {
+        db = await MongoClient.connect(url);
+        let dbo = db.db("taches");
+        let user = await dbo.collection("utilisateur").findOne({ login: req.session.user });
+        //renvoyer l'id de l'utilisateur et la listeIds
+        res.status(200).json({ _id:new mongodb.ObjectId(user._id), login:"",password:"",listeIds: user.listeIds });
+        
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: err });
+    }
+}
+
+exports.userPut = async function (req, res) {
+    try {
+        db = await MongoClient.connect(url);
+        let dbo = db.db("taches");
+        await dbo.collection("utilisateur").updateOne({ _id: new mongodb.ObjectId(req.params.id) }, { $set: { listeIds: req.body.listeIds } });
+        res.status(200).send();
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: err })
+    }
+}

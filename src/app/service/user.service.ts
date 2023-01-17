@@ -9,6 +9,7 @@ import { Observable } from 'rxjs';
 export class UserService {
 
   url: string = 'http://localhost:3000/login';
+  private urlUser: string = 'http://localhost:3000/userInfos/';
 
   constructor(private http: HttpClient) {}
 
@@ -24,4 +25,11 @@ export class UserService {
     return this.http.get<void>('http://localhost:3000/isConnected', { withCredentials: true });
   }
 
+  userInfos(): Observable<User> {
+    return this.http.get<User>(this.urlUser, { withCredentials: true });
+  }
+
+  updateUser(user: User): Observable<User> {
+    return this.http.put<User>(this.urlUser+user._id, user, { withCredentials: true });
+  }
 }

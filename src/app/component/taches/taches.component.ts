@@ -5,6 +5,8 @@ import { TachesService } from 'src/app/service/taches.service';
 import { UserService } from 'src/app/service/user.service';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { liste, listeMongo } from 'src/app/model/liste';
+import { User } from 'src/app/model/user';
+
 
 @Component({
   selector: 'app-taches',
@@ -27,7 +29,11 @@ export class TachesComponent implements OnInit {
     taches: [],
     tachesliste: []
   };
-
+  user: User = { 
+    login: '', 
+    password: '', 
+    listeIds: [] 
+  };
 
 
   filter: string = 'Tous';
@@ -36,12 +42,18 @@ export class TachesComponent implements OnInit {
     private userService: UserService,
     private router: Router) { }
 
-  ngOnInit(): void {
-    this.tacheService.getListes().subscribe({
-      next: (data2: Array<liste>) => {
-        this.listeN = data2;
+    async ngOnInit() {
+      try {
+          const data = await this.userService.userInfos().toPromise();
+          if(data)
+          this.user = data;
+          console.log("user", this.user);
+          const data2 = await this.tacheService.getListes(this.user).toPromise();
+          if(data2)
+          this.listeN = data2;
+      } catch (error) {
+          console.log(error);
       }
-    });
   }
 
   ajouter(liste: liste) {
@@ -55,7 +67,7 @@ export class TachesComponent implements OnInit {
         this.tacheService.updateListes(liste).subscribe({
           next: (data2: liste) => {
             //actualiser la liste
-            this.tacheService.getListes().subscribe({
+            this.tacheService.getListes(this.user).subscribe({
               next: (data3: Array<liste>) => { this.listeN = data3; }
             });
           }
@@ -76,9 +88,17 @@ export class TachesComponent implements OnInit {
     this.tacheService.ajoutListes(this.newListe).subscribe({
       next: (data) => {
         this.listeN.push(data);
-        //actualiser la liste
-        this.tacheService.getListes().subscribe({
-          next: (data2: Array<liste>) => { this.listeN = data2; }
+        if (data._id) {
+          console.log("data._id", data._id);
+          this.user.listeIds.push(data._id);
+        }
+        this.userService.updateUser(this.user).subscribe({
+          next: (data2: User) => {
+            //actualiser la liste
+            this.tacheService.getListes(this.user).subscribe({
+              next: (data3: Array<liste>) => { this.listeN = data3; }
+            });
+          }
         });
       }
     });
@@ -104,7 +124,7 @@ export class TachesComponent implements OnInit {
           this.tacheService.updateListes(liste).subscribe({
             next: (data2: liste) => {
               //actualiser la liste
-              this.tacheService.getListes().subscribe({
+              this.tacheService.getListes(this.user).subscribe({
                 next: (data3: Array<liste>) => { this.listeN = data3; }
               });
             }
@@ -125,7 +145,16 @@ export class TachesComponent implements OnInit {
 
     this.tacheService.removeListes(liste).subscribe({
       next: (data) => {
+        this.user.listeIds = this.user.listeIds.filter(l => liste._id != l);
         this.listeN = this.listeN.filter(l => liste._id != l._id);
+        this.userService.updateUser(this.user).subscribe({
+          next: (data2: User) => {
+            //actualiser la liste
+            this.tacheService.getListes(this.user).subscribe({
+              next: (data3: Array<liste>) => { this.listeN = data3; }
+            });
+          }
+        });
       }
     });
   }
@@ -173,7 +202,7 @@ export class TachesComponent implements OnInit {
           this.tacheService.updateListes(liste).subscribe({
             next: (data2: liste) => {
               //actualiser la liste
-              this.tacheService.getListes().subscribe({
+              this.tacheService.getListes(this.user).subscribe({
                 next: (data3: Array<liste>) => { this.listeN = data3; }
               });
             }
@@ -185,7 +214,7 @@ export class TachesComponent implements OnInit {
           this.tacheService.updateListes(liste).subscribe({
             next: (data2: liste) => {
               //actualiser la liste
-              this.tacheService.getListes().subscribe({
+              this.tacheService.getListes(this.user).subscribe({
                 next: (data3: Array<liste>) => { this.listeN = data3; }
               });
             }

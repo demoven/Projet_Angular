@@ -42,3 +42,4 @@ exports.logout = async function(req, res) {
 exports.isConnected = async function(req, res) {
     res.status(200).end();
 };
+
