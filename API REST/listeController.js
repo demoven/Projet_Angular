@@ -1,4 +1,5 @@
 const mongodb = require('mongodb');
+const { endWith } = require('rxjs');
 const MongoClient = mongodb.MongoClient;
 const ObjectId = mongodb.ObjectId;
 const url = "mongodb://127.0.0.1:27017/";
@@ -33,10 +34,16 @@ exports.listeGet = async function (req, res) {
 exports.listePost = async function (req, res) {
     let liste = req.body;
     try {
-        db = await MongoClient.connect(url);
-        let dbo = db.db("taches");
-        await dbo.collection("listes").insertOne(liste);
-        res.status(200).json(liste);
+        if (liste.titre == "") {
+            res.status(400).json({ message: 'Titre obligatoire' });
+            return
+        }
+        else {
+            db = await MongoClient.connect(url);
+            let dbo = db.db("taches");
+            await dbo.collection("listes").insertOne(liste);
+            res.status(200).json(liste);
+        }
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: err })
@@ -71,7 +78,7 @@ exports.UserInfo = async function (req, res) {
     try {
         db = await MongoClient.connect(url);
         let dbo = db.db("taches");
-        let user = await dbo.collection("utilisateur").findOne({ _id: new ObjectId(req.session.user.id)});
+        let user = await dbo.collection("utilisateur").findOne({ _id: new ObjectId(req.session.user.id) });
         res.status(200).json({ _id: new mongodb.ObjectId(user._id), login: "", password: "", listeIds: user.listeIds });
 
     } catch (err) {
@@ -82,15 +89,14 @@ exports.UserInfo = async function (req, res) {
 
 exports.userPut = async function (req, res) {
     try {
-        if(req.session.user.id == req.params.id)
-        {
-        db = await MongoClient.connect(url);
-        let dbo = db.db("taches");
-        await dbo.collection("utilisateur").updateOne({ _id: new mongodb.ObjectId(req.params.id) }, { $set: { listeIds: req.body.listeIds } });
-        res.status(200).send();
+        if (req.session.user.id == req.params.id) {
+            db = await MongoClient.connect(url);
+            let dbo = db.db("taches");
+            await dbo.collection("utilisateur").updateOne({ _id: new mongodb.ObjectId(req.params.id) }, { $set: { listeIds: req.body.listeIds } });
+            res.status(200).send();
         }
         else
-        res.status(401).json({ message: 'Unauthorized' });
+            res.status(401).json({ message: 'Unauthorized' });
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: err })

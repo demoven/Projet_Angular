@@ -17,10 +17,16 @@ exports.tacheGet = async function(req, res) {
 exports.tachePost = async function(req, res, next) {
     let tache = req.body;
     try {
+        if (tache.titre == null || tache.titre == ""){
+            res.status(400).json({ message: "Titre obligatoire" });
+            return;
+        }
+        else{
         db = await MongoClient.connect(url);
         let dbo = db.db("taches");
         await dbo.collection("taches").insertOne(tache);
         res.status(200).json(tache);
+        }
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: err })

@@ -17,7 +17,7 @@ import { lastValueFrom } from 'rxjs';
 })
 export class TachesComponent implements OnInit {
   listeN: Array<liste> = [];
-  newTache:Array<Tache> = [];
+  newTache: Array<Tache> = [];
   newListe: listeMongo = {
     titre: '',
     taches: [],
@@ -27,10 +27,10 @@ export class TachesComponent implements OnInit {
     taches: [],
     tachesliste: []
   };
-  user: User = { 
-    login: '', 
-    password: '', 
-    listeIds: [] 
+  user: User = {
+    login: '',
+    password: '',
+    listeIds: []
   };
   filter: string = 'Tous';
 
@@ -38,29 +38,31 @@ export class TachesComponent implements OnInit {
     private userService: UserService,
     private router: Router) { }
 
-    async ngOnInit() {
-      try {
-          const data = await lastValueFrom( this.userService.userInfos());
-          if(data)
-          this.user = data;
-          const data2 = await lastValueFrom( this.tacheService.getListes(this.user));
-          if(data2)
-          this.listeN = data2;
-          this.listeN.forEach(liste => {
-          this.newTache.push({
-            titre: '',
-            termine: false,
-            statut: liste.titre
-          });
+  async ngOnInit() {
+    try {
+      const data = await lastValueFrom(this.userService.userInfos());
+      if (data)
+        this.user = data;
+      const data2 = await lastValueFrom(this.tacheService.getListes(this.user));
+      if (data2)
+        this.listeN = data2;
+      this.listeN.forEach(liste => {
+        this.newTache.push({
+          titre: '',
+          termine: false,
+          statut: liste.titre
         });
-      } catch (error) {
+      });
+    } catch (error) {
 
-          this.router.navigate(['login']);
-      }
+      this.router.navigate(['login']);
+    }
   }
 
   ajouter(liste: liste) {
     let index = this.listeN.indexOf(liste);
+    if (this.newTache[this.listeN.indexOf(liste)].titre == '' || this.newTache[this.listeN.indexOf(liste)].titre == null)
+      return;
     this.newTache[index].statut = liste.titre;
     this.tacheService.ajoutTaches(this.newTache[index]).subscribe(
       (data) => {
@@ -83,12 +85,13 @@ export class TachesComponent implements OnInit {
       termine: false,
       statut: ''
     };
-    
+
   }
 
 
   ajouterListe() {
-    
+    if (this.newListe2.titre == '' || this.newListe2.titre == null)
+      return;
     this.newListe.titre = this.newListe2.titre;
     this.newListe.taches = this.newListe2.taches;
     this.tacheService.ajoutListes(this.newListe).subscribe({
@@ -121,8 +124,8 @@ export class TachesComponent implements OnInit {
       taches: [],
       tachesliste: []
     };
-  
-}
+
+  }
 
 
   supprimer(tache: Tache): void {
