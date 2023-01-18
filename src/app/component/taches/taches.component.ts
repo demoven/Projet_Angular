@@ -83,10 +83,12 @@ export class TachesComponent implements OnInit {
       termine: false,
       statut: ''
     };
+    
   }
 
 
   ajouterListe() {
+    
     this.newListe.titre = this.newListe2.titre;
     this.newListe.taches = this.newListe2.taches;
     this.tacheService.ajoutListes(this.newListe).subscribe({
@@ -119,7 +121,8 @@ export class TachesComponent implements OnInit {
       taches: [],
       tachesliste: []
     };
-  }
+  
+}
 
 
   supprimer(tache: Tache): void {
@@ -128,7 +131,6 @@ export class TachesComponent implements OnInit {
         this.listeN.forEach(liste => {
           liste.tachesliste = liste.tachesliste.filter(t => t._id != tache._id);
           liste.taches = liste.taches.filter(t => t != tache._id);
-
           this.tacheService.updateListes(liste).subscribe({
             next: (data2: liste) => {
               //actualiser la liste
@@ -139,11 +141,6 @@ export class TachesComponent implements OnInit {
           });
         }
         );
-      }
-    });
-    this.newTache.forEach(t => {
-      if (t.statut == tache.statut) {
-        t.titre = '';
       }
     });
   }
@@ -158,8 +155,10 @@ export class TachesComponent implements OnInit {
 
     this.tacheService.removeListes(liste).subscribe({
       next: (data) => {
+        let index = this.listeN.indexOf(liste);
         this.user.listeIds = this.user.listeIds.filter(l => liste._id != l);
         this.listeN = this.listeN.filter(l => liste._id != l._id);
+        this.newTache.splice(index, 1);
         this.userService.updateUser(this.user).subscribe({
           next: (data2: User) => {
             //actualiser la liste

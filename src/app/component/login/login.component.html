@@ -17,7 +17,7 @@
                             </div>
 
                             <div class="form-outline form-white mb-4">
-                                <input type="password" id="typePasswordX" class="form-control form-control-lg" [(ngModel)]="user.password" />
+                                <input type="password" id="typePasswordX" class="form-control form-control-lg" (keyup.enter)="submit()" [(ngModel)]="user.password" />
                             </div>
 
                             <p class="small mb-5 pb-lg-2"><a class="text-white-50" href="#!">Mot de passe oublié?</a></p>

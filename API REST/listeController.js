@@ -8,8 +8,6 @@ exports.listeGet = async function (req, res) {
         if (req.session.user.id == req.params.id) {
             db = await MongoClient.connect(url);
             let dbo = db.db("taches");
-            console.log(req.params.id)
-            console.log(req.session.user.id)
             let user = await dbo.collection("utilisateur").findOne({ _id: new ObjectId(req.params.id) });
             const listeIds = user.listeIds.map(l => new ObjectId(l));
             let listeObject = await dbo.collection("listes").find({ _id: { $in: listeIds } }).toArray();
