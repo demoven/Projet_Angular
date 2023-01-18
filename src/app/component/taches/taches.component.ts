@@ -13,11 +13,7 @@ import { liste, listeMongo } from 'src/app/model/liste';
 })
 export class TachesComponent implements OnInit {
   listeN: Array<liste> = [];
-  newTache: Tache = {
-    titre: '',
-    termine: false,
-    statut: ''
-  };
+  newTache: Array<Tache> = [];
   newListe: listeMongo = {
     titre: '',
     taches: [],
@@ -40,13 +36,21 @@ export class TachesComponent implements OnInit {
     this.tacheService.getListes().subscribe({
       next: (data2: Array<liste>) => {
         this.listeN = data2;
+        this.listeN.forEach(liste => {
+          this.newTache.push({
+            titre: '',
+            termine: false,
+            statut: liste.titre
+            });
+        });
       }
     });
   }
 
   ajouter(liste: liste) {
-    this.newTache.statut = liste.titre;
-    this.tacheService.ajoutTaches(this.newTache).subscribe(
+    let index = this.listeN.indexOf(liste);
+    this.newTache[index].statut = liste.titre;
+    this.tacheService.ajoutTaches(this.newTache[index]).subscribe(
       (data) => {
         liste.tachesliste.push(data);
         if (data._id) {
@@ -62,7 +66,7 @@ export class TachesComponent implements OnInit {
         });
       }
     );
-    this.newTache = {
+    this.newTache[index] = {
       titre: '',
       termine: false,
       statut: ''
@@ -91,6 +95,11 @@ export class TachesComponent implements OnInit {
       taches: [],
       tachesliste: []
     };
+    this.newTache.push({
+      titre: '',
+      termine: false,
+      statut: ''
+    });
   }
 
 
@@ -121,11 +130,15 @@ export class TachesComponent implements OnInit {
         next: (data) => {
         }
       });
+
     }
+    let index = this.listeN.indexOf(liste);
 
     this.tacheService.removeListes(liste).subscribe({
       next: (data) => {
+        
         this.listeN = this.listeN.filter(l => liste._id != l._id);
+        this.newTache.splice(index, 1);
       }
     });
   }
