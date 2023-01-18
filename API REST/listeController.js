@@ -5,25 +5,31 @@ const url = "mongodb://127.0.0.1:27017/";
 
 exports.listeGet = async function (req, res) {
     try {
-        db = await MongoClient.connect(url);
-        let dbo = db.db("taches");
-        console.log(req.params.id)
-        let user = await dbo.collection("utilisateur").findOne({ _id: new ObjectId(req.params.id) });
-        const listeIds = user.listeIds.map(l => new ObjectId(l));
-        let listeObject = await dbo.collection("listes").find({ _id: { $in: listeIds } }).toArray();
-        for (let i = 0; i < listeObject.length; i++) {
-            const liste = listeObject[i];
-            if(liste.taches){
-            const taches = liste.taches.map(t => new ObjectId(t));
-            liste.tachesliste = await dbo.collection("taches").find({ _id: { $in: taches } }).toArray();
+        if (req.session.user.id == req.params.id) {
+            db = await MongoClient.connect(url);
+            let dbo = db.db("taches");
+            console.log(req.params.id)
+            console.log(req.session.user.id)
+            let user = await dbo.collection("utilisateur").findOne({ _id: new ObjectId(req.params.id) });
+            const listeIds = user.listeIds.map(l => new ObjectId(l));
+            let listeObject = await dbo.collection("listes").find({ _id: { $in: listeIds } }).toArray();
+            for (let i = 0; i < listeObject.length; i++) {
+                const liste = listeObject[i];
+                if (liste.taches) {
+                    const taches = liste.taches.map(t => new ObjectId(t));
+                    liste.tachesliste = await dbo.collection("taches").find({ _id: { $in: taches } }).toArray();
+                }
+
             }
-            
+            res.status(200).json(listeObject);
         }
-        res.status(200).json(listeObject);
+        else
+            res.status(401).json({ message: 'Unauthorized' });
+
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: err });
-    } 
+    }
 };
 
 exports.listePost = async function (req, res) {
@@ -63,14 +69,13 @@ exports.listePut = async function (req, res) {
     }
 };
 
-exports.UserInfo = async function(req, res) {
+exports.UserInfo = async function (req, res) {
     try {
         db = await MongoClient.connect(url);
         let dbo = db.db("taches");
-        let user = await dbo.collection("utilisateur").findOne({ login: req.session.user });
-        //renvoyer l'id de l'utilisateur et la listeIds
-        res.status(200).json({ _id:new mongodb.ObjectId(user._id), login:"",password:"",listeIds: user.listeIds });
-        
+        let user = await dbo.collection("utilisateur").findOne({ _id: new ObjectId(req.session.user.id)});
+        res.status(200).json({ _id: new mongodb.ObjectId(user._id), login: "", password: "", listeIds: user.listeIds });
+
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: err });
@@ -79,10 +84,15 @@ exports.UserInfo = async function(req, res) {
 
 exports.userPut = async function (req, res) {
     try {
+        if(req.session.user.id == req.params.id)
+        {
         db = await MongoClient.connect(url);
         let dbo = db.db("taches");
         await dbo.collection("utilisateur").updateOne({ _id: new mongodb.ObjectId(req.params.id) }, { $set: { listeIds: req.body.listeIds } });
         res.status(200).send();
+        }
+        else
+        res.status(401).json({ message: 'Unauthorized' });
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: err })

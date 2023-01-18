@@ -12,7 +12,7 @@
             </div>
         </div>
         <div cdkDropListGroup>
-            <div class="row principale" *ngFor="let liste of listeN">
+            <div class="row principale" *ngFor="let liste of listeN ; let i = index">
 
                 <div class="col-md-3">
                     <div class="d-flex justify-content-between m-1">
@@ -20,7 +20,7 @@
                         <button class="btn btn-outline-danger m-1" (click)='supprimerListe(liste)'>Supprimer</button>
                     </div>
                     <div class="d-flex flex-row justify-content-center ">
-                        <input class="inputAjoutTache" class="saisieInput" type="text" name="tache" placeholder="tache" [(ngModel)]="newTache.titre">
+                        <input class="inputAjoutTache" class="saisieInput" type="text" name="tache" placeholder="tache" [(ngModel)]="newTache[i].titre">
                         <button class="buttonAjoutTache" class="btn btn-primary" value="Ajouter" (click)='ajouter(liste)'>Ajouter</button>
                     </div>
                     <div class="d-flex  justify-content-center">

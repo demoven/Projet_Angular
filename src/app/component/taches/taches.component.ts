@@ -6,6 +6,8 @@ import { UserService } from 'src/app/service/user.service';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { liste, listeMongo } from 'src/app/model/liste';
 import { User } from 'src/app/model/user';
+import { lastValueFrom } from 'rxjs';
+
 
 
 @Component({
@@ -15,11 +17,7 @@ import { User } from 'src/app/model/user';
 })
 export class TachesComponent implements OnInit {
   listeN: Array<liste> = [];
-  newTache: Tache = {
-    titre: '',
-    termine: false,
-    statut: ''
-  };
+  newTache:Array<Tache> = [];
   newListe: listeMongo = {
     titre: '',
     taches: [],
@@ -34,8 +32,6 @@ export class TachesComponent implements OnInit {
     password: '', 
     listeIds: [] 
   };
-
-
   filter: string = 'Tous';
 
   constructor(private tacheService: TachesService,
@@ -44,21 +40,29 @@ export class TachesComponent implements OnInit {
 
     async ngOnInit() {
       try {
-          const data = await this.userService.userInfos().toPromise();
+          const data = await lastValueFrom( this.userService.userInfos());
           if(data)
           this.user = data;
-          console.log("user", this.user);
-          const data2 = await this.tacheService.getListes(this.user).toPromise();
+          const data2 = await lastValueFrom( this.tacheService.getListes(this.user));
           if(data2)
           this.listeN = data2;
+          this.listeN.forEach(liste => {
+          this.newTache.push({
+            titre: '',
+            termine: false,
+            statut: liste.titre
+          });
+        });
       } catch (error) {
-          console.log(error);
+
+          this.router.navigate(['login']);
       }
   }
 
   ajouter(liste: liste) {
-    this.newTache.statut = liste.titre;
-    this.tacheService.ajoutTaches(this.newTache).subscribe(
+    let index = this.listeN.indexOf(liste);
+    this.newTache[index].statut = liste.titre;
+    this.tacheService.ajoutTaches(this.newTache[index]).subscribe(
       (data) => {
         liste.tachesliste.push(data);
         if (data._id) {
@@ -74,7 +78,7 @@ export class TachesComponent implements OnInit {
         });
       }
     );
-    this.newTache = {
+    this.newTache[index] = {
       titre: '',
       termine: false,
       statut: ''
@@ -89,7 +93,6 @@ export class TachesComponent implements OnInit {
       next: (data) => {
         this.listeN.push(data);
         if (data._id) {
-          console.log("data._id", data._id);
           this.user.listeIds.push(data._id);
         }
         this.userService.updateUser(this.user).subscribe({
@@ -99,6 +102,11 @@ export class TachesComponent implements OnInit {
               next: (data3: Array<liste>) => { this.listeN = data3; }
             });
           }
+        });
+        this.newTache.push({
+          titre: '',
+          termine: false,
+          statut: data.titre
         });
       }
     });
@@ -131,6 +139,11 @@ export class TachesComponent implements OnInit {
           });
         }
         );
+      }
+    });
+    this.newTache.forEach(t => {
+      if (t.statut == tache.statut) {
+        t.titre = '';
       }
     });
   }
@@ -170,7 +183,12 @@ export class TachesComponent implements OnInit {
   loggout() {
     this.userService.logout().subscribe(() => {
       this.router.navigate(['']);
-    })
+    });
+    this.user = {
+      login: '',
+      password: '',
+      listeIds: []
+    };
   }
 
   change(filter: string) {

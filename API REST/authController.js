@@ -22,7 +22,7 @@ exports.login = async function(req, res) {
         let dbo = db.db("taches");
         let utilisateurs = await dbo.collection("utilisateur").find({ login: utilisateur.login, password: utilisateur.password }).toArray();
         if (utilisateurs.length > 0) {
-            req.session.user = utilisateur.login;
+            req.session.user = {"name":utilisateur.login, "id":utilisateurs[0]._id};
             res.status(200).end();
         } else {
             res.status(401).json({ message: 'Unauthorized' });
