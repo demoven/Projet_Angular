@@ -8,3 +8,20 @@
     margin-top: 5%;
 }
 
+.borderRouge{
+    border: 1px solid red;
+}
+
+.liste{
+    margin-bottom: 4%;
+}
+
+.titreListe{
+    margin-bottom: 4%;
+}
+
+.informations {
+    width : 75%;
+    margin-left: 12.5%;
+    margin-right: 12.5%;
+}
