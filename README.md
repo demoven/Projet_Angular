@@ -1,27 +1,29 @@
-# AngularTP
+# Angular Projet
+### ATTENTION : Il faut exécuter `npm install` dans le terminal pour le PROJET_ANGULAR et API REST dans chaque branche
+### Pour lancer le projet il faut exécuter `ng serve` dans PROJET_ANGULAR et `node app.js` dans API REST
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.0.1.
+Le projet a été réalisé dans son intégralité, il est découpé en 5 parties différentes chacune dans une branche : 
 
-## Development server
+# 1) Statut_tache
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+L'ajout simple d'un statut sur toutes les taches.
 
-## Code scaffolding
+# 2) Drag_and_Drop
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Ajout du drag and drop sur 4 listes différentes.
+Modification de l'API REST.
 
-## Build
+# 3) Liste_Dynamique
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+Modification de la partie 2 pour générer autant de listes souhaitées et adaptation du drag and drop.
+Modification de l'API REST.
 
-## Running unit tests
+# 4) Identification
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Ajout du formulaire d'inscription avec un nouveau component signup.
+Modification de l'API REST.
 
-## Running end-to-end tests
+# 5) Hash
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+Ajout de hash pour sécuriser les mots de passe en base de donnée.
+Modification de l'API REST.
