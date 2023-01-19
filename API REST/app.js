@@ -3,7 +3,7 @@ const session = require('express-session');
 
 const bodyParser = require('body-parser');
 const { tacheGet, tachePost, tacheDelete, tachePut} = require('./tacheController');
-const { signIn, login, logout, isConnected } = require("./authController")
+const { signIn, login, logout, isConnected, signUp } = require("./authController")
 const { listeGet, listePost, listeDelete, listePut, UserInfo, userPut } = require("./listeController")
 const cors = require('cors')
 
@@ -37,6 +37,7 @@ app.post('/logout', logout);
 app.get('/isConnected', checkSignIn, isConnected);
 app.get('/userInfos', checkSignIn, UserInfo);
 app.put('/userInfos/:id', checkSignIn, userPut);
+app.post('/signup', signUp);
 
 app.get('/listes/:id', checkSignIn, listeGet);
 app.post('/listes', checkSignIn, listePost);
