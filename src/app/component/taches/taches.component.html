@@ -27,7 +27,7 @@
                         <div [ngClass]="{'listeVide': liste.taches.length === 0 }" cdkDropList [cdkDropListData]="liste.tachesliste" [id]="liste._id ? liste._id : ''" class="d-flex flex-column" (cdkDropListDropped)="drop($event)">
                             <div class="d-flex justify-content-center align-items-center m-1" *ngFor="let tache of liste.tachesliste" cdkDrag>
                                 <input (click)="modifier(tache)" type="checkbox" [(ngModel)]="tache.termine">
-                                <div [ngClass]="tache.termine? 'text-decoration-line-through' : '' ">{{tache.titre}}</div>
+                                <div class="titretache" [ngClass]="tache.termine? 'text-decoration-line-through' : '' ">{{tache.titre}}</div>
                                 <button class="btn btn-outline-danger ml-2" (click)='supprimer(tache)'>Supprimer</button>
                             </div>
                         </div>
