@@ -9,19 +9,31 @@ import { Observable } from 'rxjs';
 export class UserService {
 
   url: string = 'http://localhost:3000/login';
+  private urlUser: string = 'http://localhost:3000/userInfos/';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  login(user: User): Observable<void>  {
+  login(user: User): Observable<void> {
     return this.http.post<void>(this.url, user, { withCredentials: true });
   }
 
-  logout():Observable<void> {
+  logout(): Observable<void> {
     return this.http.post<void>('http://localhost:3000/logout', {}, { withCredentials: true });
   }
-  
+
   isConnected(): Observable<void> {
     return this.http.get<void>('http://localhost:3000/isConnected', { withCredentials: true });
   }
 
+  userInfos(): Observable<User> {
+    return this.http.get<User>(this.urlUser, { withCredentials: true });
+  }
+
+  updateUser(user: User): Observable<User> {
+    return this.http.put<User>(this.urlUser + user._id, user, { withCredentials: true });
+  }
+
+  signup(user: User): Observable<User> {
+    return this.http.post<User>('http://localhost:3000/signup', user, { withCredentials: true });
+  }
 }
